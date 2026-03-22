@@ -1,0 +1,76 @@
+/* JobPilot — Floating Action Button on Job Pages */
+
+#jobpilot-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999999;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.jobpilot-fab-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c3aed, #3b82f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4), 0 2px 8px rgba(0,0,0,0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: jobpilot-pulse 3s ease-in-out infinite;
+}
+
+.jobpilot-fab-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 28px rgba(124, 58, 237, 0.5), 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.jobpilot-fab-btn:active {
+  transform: scale(0.95);
+}
+
+.jobpilot-saving {
+  animation: jobpilot-spin 0.6s linear infinite !important;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.jobpilot-saved {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  animation: none !important;
+}
+
+@keyframes jobpilot-pulse {
+  0%, 100% { box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4); }
+  50% { box-shadow: 0 4px 30px rgba(124, 58, 237, 0.6); }
+}
+
+@keyframes jobpilot-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Toast */
+.jobpilot-toast {
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  background: #1e293b;
+  color: #f1f5f9;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.jobpilot-toast-show {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}

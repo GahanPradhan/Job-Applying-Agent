@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Saved — JobPilot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0e1a;
+      color: #f1f5f9;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .bg-orbs { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+    .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.15; }
+    .orb-1 { width: 500px; height: 500px; background: #7c3aed; top: -150px; right: -80px; }
+    .orb-2 { width: 350px; height: 350px; background: #3b82f6; bottom: -80px; left: -40px; }
+
+    .container {
+      background: rgba(17, 24, 39, 0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 48px 40px;
+      max-width: 480px;
+      width: 90%;
+      text-align: center;
+      animation: slideUp 0.5s ease;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .success-icon {
+      width: 80px; height: 80px;
+      margin: 0 auto 24px;
+      background: rgba(16, 185, 129, 0.15);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      animation: pop 0.6s ease;
+    }
+    @keyframes pop {
+      0% { transform: scale(0); }
+      60% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .success-icon svg { color: #10b981; }
+
+    h1 {
+      font-size: 1.6rem; font-weight: 800;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #f1f5f9, #94a3b8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .subtitle { color: #64748b; font-size: 0.9rem; margin-bottom: 24px; }
+
+    .job-preview {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 28px;
+      text-align: left;
+    }
+    .job-url {
+      font-size: 0.82rem;
+      color: #a78bfa;
+      word-break: break-all;
+      line-height: 1.5;
+    }
+    .job-platform {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 3px 10px;
+      background: rgba(124, 58, 237, 0.15);
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #a78bfa;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .actions { display: flex; gap: 10px; justify-content: center; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border: none; border-radius: 10px;
+      font-family: 'Inter', sans-serif; font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; transition: all 0.3s ease; text-decoration: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #7c3aed, #3b82f6);
+      color: white; box-shadow: 0 0 20px rgba(124,58,237,0.2);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(124,58,237,0.4); }
+    .btn-outline {
+      background: transparent; color: #94a3b8;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.06); color: #f1f5f9; }
+
+    .auto-close {
+      margin-top: 20px; font-size: 0.78rem; color: #475569;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
+
+  <div class="container">
+    <div class="success-icon">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+    <h1>Job Saved!</h1>
+    <p class="subtitle">This job has been added to your JobPilot tracker</p>
+
+    <div class="job-preview">
+      <div class="job-url" id="jobUrl">Loading...</div>
+      <span class="job-platform" id="jobPlatform">...</span>
+    </div>
+
+    <div class="actions">
+      <a href="/" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Open Tracker
+      </a>
+      <button class="btn btn-outline" onclick="window.close()">Close</button>
+    </div>
+
+    <p class="auto-close">This window can be safely closed</p>
+  </div>
+
+  <script>
+    // Extract URL from query params and display
+    const params = new URLSearchParams(window.location.search);
+    const url = params.get('url') || params.get('text') || '';
+    
+    if (url) {
+      document.getElementById('jobUrl').textContent = url;
+      
+      // Detect platform
+      const u = url.toLowerCase();
+      let platform = 'Other';
+      if (u.includes('linkedin.com')) platform = 'LinkedIn';
+      else if (u.includes('indeed.com')) platform = 'Indeed';
+      else if (u.includes('naukri.com')) platform = 'Naukri';
+      else if (u.includes('glassdoor.com')) platform = 'Glassdoor';
+      else if (u.includes('monster.com')) platform = 'Monster';
+      document.getElementById('jobPlatform').textContent = platform;
+    }
+  </script>
+</body>
+</html>

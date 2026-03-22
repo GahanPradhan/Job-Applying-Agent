@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "JobPilot — Save Jobs Instantly",
+  "short_name": "JobPilot",
+  "version": "1.0.0",
+  "description": "Save any job listing to your JobPilot tracker with one click. Works on LinkedIn, Indeed, Naukri, Glassdoor, and more.",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["http://localhost:3000/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon-16.png",
+      "48": "icon-48.png",
+      "128": "icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "icon-16.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.linkedin.com/jobs/*",
+        "*://*.linkedin.com/job/*",
+        "*://*.indeed.com/*",
+        "*://*.naukri.com/*",
+        "*://*.glassdoor.com/*",
+        "*://*.glassdoor.co.in/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ]
+}

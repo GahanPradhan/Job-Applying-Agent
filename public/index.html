@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Job Automation App — Store your resume, track job applications, and auto-apply with one click. Integrated with LinkedIn, WhatsApp, and more.">
+  <title>JobPilot — Smart Job Automation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#7c3aed">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="JobPilot">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+</head>
+<body>
+  <!-- Animated background -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Sidebar Navigation -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <span class="brand-name">JobPilot</span>
+    </div>
+
+    <div class="nav-links">
+      <button class="nav-link active" data-tab="dashboard" id="nav-dashboard">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        <span>Dashboard</span>
+      </button>
+
+      <button class="nav-link" data-tab="profile" id="nav-profile">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span>My Profile</span>
+      </button>
+
+      <button class="nav-link" data-tab="resume" id="nav-resume">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+        <span>Resume</span>
+      </button>
+
+      <button class="nav-link" data-tab="jobs" id="nav-jobs">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+        </svg>
+        <span>Job Tracker</span>
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="version-badge">v1.0</div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content" id="mainContent">
+
+    <!-- ============ DASHBOARD TAB ============ -->
+    <section class="tab-content active" id="tab-dashboard">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-subtitle">Your job hunt at a glance</p>
+        </div>
+        <button class="btn btn-primary btn-glow" id="quickAddJob">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Job Link
+        </button>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card stat-total">
+          <div class="stat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number" id="stat-total">0</span>
+            <span class="stat-label">Total Jobs</span>
+          </div>
+        </div>
+        <div class="stat-card stat-applied">
+          <div class="stat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number" id="stat-applied">0</span>
+            <span class="stat-label">Applied</span>
+          </div>
+        </div>
+        <div class="stat-card stat-interview">
+          <div class="stat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number" id="stat-interview">0</span>
+            <span class="stat-label">Interviews</span>
+          </div>
+        </div>
+        <div class="stat-card stat-offer">
+          <div class="stat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number" id="stat-offer">0</span>
+            <span class="stat-label">Offers</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions & Recent Jobs -->
+      <div class="dashboard-grid">
+        <div class="card quick-actions-card">
+          <h2 class="card-title">Quick Actions</h2>
+          <div class="quick-actions">
+            <button class="quick-action-btn" id="qaBtnProfile">
+              <div class="qa-icon qa-icon-profile">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <span>Setup Profile</span>
+            </button>
+            <button class="quick-action-btn" id="qaBtnResume">
+              <div class="qa-icon qa-icon-resume">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <span>Upload Resume</span>
+            </button>
+            <button class="quick-action-btn" id="qaBtnAddJob">
+              <div class="qa-icon qa-icon-job">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              </div>
+              <span>Track a Job</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="card recent-jobs-card">
+          <h2 class="card-title">Recent Jobs</h2>
+          <div id="recentJobsList" class="recent-jobs-list">
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              <p>No jobs tracked yet. Add your first job link!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PROFILE TAB ============ -->
+    <section class="tab-content" id="tab-profile">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">My Profile</h1>
+          <p class="page-subtitle">Your professional identity for job applications</p>
+        </div>
+      </div>
+
+      <div class="card profile-card">
+        <form id="profileForm" class="profile-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="profileName">Full Name</label>
+              <input type="text" id="profileName" placeholder="e.g. Divya Sharma" autocomplete="name">
+            </div>
+            <div class="form-group">
+              <label for="profileEmail">Email</label>
+              <input type="email" id="profileEmail" placeholder="e.g. divya@example.com" autocomplete="email">
+            </div>
+            <div class="form-group">
+              <label for="profilePhone">Phone</label>
+              <input type="tel" id="profilePhone" placeholder="e.g. +91 98765 43210" autocomplete="tel">
+            </div>
+            <div class="form-group">
+              <label for="profileLocation">Location</label>
+              <input type="text" id="profileLocation" placeholder="e.g. Bangalore, India">
+            </div>
+            <div class="form-group">
+              <label for="profileLinkedin">LinkedIn URL</label>
+              <input type="url" id="profileLinkedin" placeholder="https://linkedin.com/in/your-profile">
+            </div>
+            <div class="form-group">
+              <label for="profileGithub">GitHub / Portfolio URL</label>
+              <input type="url" id="profileGithub" placeholder="https://github.com/yourusername">
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="profileTitle">Professional Title</label>
+            <input type="text" id="profileTitle" placeholder="e.g. Full Stack Developer | 3+ Years Experience">
+          </div>
+
+          <div class="form-group full-width">
+            <label for="profileSkills">Skills <span class="hint">(comma separated)</span></label>
+            <input type="text" id="profileSkills" placeholder="e.g. JavaScript, React, Node.js, Python, SQL">
+          </div>
+
+          <div class="form-group full-width">
+            <label for="profileSummary">Professional Summary</label>
+            <textarea id="profileSummary" rows="4" placeholder="Write a brief professional summary that you can use across applications..."></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="profileExperience">Work Experience</label>
+            <textarea id="profileExperience" rows="6" placeholder="Paste your work experience here for quick copy-paste into applications..."></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-glow" id="saveProfileBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save Profile
+            </button>
+            <span class="save-status" id="profileSaveStatus"></span>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============ RESUME TAB ============ -->
+    <section class="tab-content" id="tab-resume">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Resume</h1>
+          <p class="page-subtitle">Upload and manage your resume</p>
+        </div>
+      </div>
+
+      <div class="card resume-card">
+        <!-- Drop zone -->
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-zone-content">
+            <div class="drop-icon">
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+            </div>
+            <h3>Drag & drop your resume here</h3>
+            <p>or click to browse files</p>
+            <p class="file-hint">Supports PDF, DOC, DOCX — Max 10MB</p>
+          </div>
+          <input type="file" id="resumeInput" accept=".pdf,.doc,.docx" hidden>
+        </div>
+
+        <!-- Resume info (shown after upload) -->
+        <div class="resume-info" id="resumeInfo" style="display: none;">
+          <div class="resume-file-card">
+            <div class="file-icon">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+            </div>
+            <div class="file-details">
+              <h3 id="resumeFileName">resume.pdf</h3>
+              <p id="resumeFileMeta">Uploaded just now • 245 KB</p>
+            </div>
+            <div class="file-actions">
+              <button class="btn btn-outline btn-sm" id="downloadResume">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download
+              </button>
+              <button class="btn btn-danger btn-sm" id="deleteResume">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                Delete
+              </button>
+              <button class="btn btn-outline btn-sm" id="replaceResume">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Replace
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ JOBS TAB ============ -->
+    <section class="tab-content" id="tab-jobs">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Job Tracker</h1>
+          <p class="page-subtitle">Manage all your job applications in one place</p>
+        </div>
+        <button class="btn btn-primary btn-glow" id="addJobBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Job Link
+        </button>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all" id="filter-all">All</button>
+        <button class="filter-btn" data-filter="saved" id="filter-saved">Saved</button>
+        <button class="filter-btn" data-filter="applied" id="filter-applied">Applied</button>
+        <button class="filter-btn" data-filter="interview" id="filter-interview">Interview</button>
+        <button class="filter-btn" data-filter="offer" id="filter-offer">Offer</button>
+        <button class="filter-btn" data-filter="rejected" id="filter-rejected">Rejected</button>
+      </div>
+
+      <!-- Job list -->
+      <div class="jobs-list" id="jobsList">
+        <div class="empty-state" id="jobsEmptyState">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.3">
+            <rect x="2" y="7" width="20" height="14" rx="2"/>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+          </svg>
+          <h3>No jobs here yet</h3>
+          <p>Paste a job link to start tracking your applications</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ ADD JOB MODAL ============ -->
+  <div class="modal-overlay" id="addJobModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Add Job Link</h2>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+      <form id="addJobForm" class="modal-body">
+        <div class="form-group">
+          <label for="jobUrl">Job URL <span class="required">*</span></label>
+          <input type="url" id="jobUrl" placeholder="Paste the job listing URL here..." required>
+          <span class="field-hint">Supports LinkedIn, Indeed, Naukri, Glassdoor, and more</span>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="jobTitle">Job Title</label>
+            <input type="text" id="jobTitle" placeholder="e.g. Senior React Developer">
+          </div>
+          <div class="form-group">
+            <label for="jobCompany">Company</label>
+            <input type="text" id="jobCompany" placeholder="e.g. Google">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="jobLocation">Location</label>
+            <input type="text" id="jobLocation" placeholder="e.g. Bangalore, Remote">
+          </div>
+          <div class="form-group">
+            <label for="jobSalary">Salary Range</label>
+            <input type="text" id="jobSalary" placeholder="e.g. ₹15-25 LPA">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="jobNotes">Notes</label>
+          <textarea id="jobNotes" rows="3" placeholder="Any notes about this position..."></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" id="cancelModal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-glow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Save & Track
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ SHARE MODAL ============ -->
+  <div class="modal-overlay" id="shareModal">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h2>Share Job</h2>
+        <button class="modal-close" id="closeShareModal">&times;</button>
+      </div>
+      <div class="modal-body share-body">
+        <p class="share-job-title" id="shareJobTitle">Job Title</p>
+        <div class="share-buttons">
+          <button class="share-btn share-whatsapp" id="shareWhatsapp">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            WhatsApp
+          </button>
+          <button class="share-btn share-linkedin" id="shareLinkedin">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn
+          </button>
+          <button class="share-btn share-twitter" id="shareTwitter">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            X / Twitter
+          </button>
+          <button class="share-btn share-telegram" id="shareTelegram">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+            Telegram
+          </button>
+          <button class="share-btn share-email" id="shareEmail">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Email
+          </button>
+          <button class="share-btn share-copy" id="shareCopy">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy Link
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast">
+    <span id="toastMessage">Saved successfully!</span>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

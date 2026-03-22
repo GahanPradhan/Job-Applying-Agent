@@ -560,7 +560,21 @@ body {
 .platform-indeed { background: rgba(0, 60, 113, 0.2); color: #2164f3; }
 .platform-naukri { background: rgba(66, 133, 244, 0.2); color: #4285f4; }
 .platform-glassdoor { background: rgba(12, 170, 65, 0.2); color: #0caa41; }
-.platform-other { background: var(--bg-glass-hover); color: var(--text-muted); }
+.platform-workday { background: rgba(0, 95, 160, 0.2); color: #005fa0; }
+.platform-lever { background: rgba(114, 191, 68, 0.2); color: #72bf44; }
+.platform-greenhouse { background: rgba(60, 152, 60, 0.2); color: #3c983c; }
+.platform-monster { background: rgba(110, 60, 180, 0.2); color: #6e3cb4; }
+.platform-angellist { background: rgba(0, 0, 0, 0.15); color: #d4d4d4; }
+.platform-ziprecruiter { background: rgba(39, 134, 97, 0.2); color: #278661; }
+.platform-instahyre { background: rgba(251, 176, 52, 0.2); color: #fbb034; }
+.platform-internshala { background: rgba(0, 137, 202, 0.2); color: #0089ca; }
+.platform-unknown { background: rgba(100, 116, 139, 0.15); color: #94a3b8; }
+
+/* Generic fallback — for any company website domain badge */
+.platform-badge:not([class*="platform-linkedin"]):not([class*="platform-indeed"]):not([class*="platform-naukri"]):not([class*="platform-glassdoor"]):not([class*="platform-unknown"]) {
+  background: rgba(124, 58, 237, 0.12);
+  color: var(--accent-primary-light);
+}
 
 .recent-job-info {
   min-width: 0;

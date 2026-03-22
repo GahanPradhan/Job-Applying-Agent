@@ -709,9 +709,26 @@ function getPlatformLabel(platform) {
     greenhouse: 'GH',
     workday: 'WD',
     ziprecruiter: 'ZR',
-    other: '🔗'
+    instahyre: 'IH',
+    hirect: 'HR',
+    cutshort: 'CS',
+    freshersworld: 'FW',
+    shine: 'SH',
+    foundit: 'FI',
+    internshala: 'IS',
+    apna: 'AP',
+    smartrecruiters: 'SR',
+    icims: 'IC',
+    jobvite: 'JV',
+    ashby: 'AS',
+    bamboohr: 'BH',
+    recruitee: 'RC',
+    unknown: '??',
   };
-  return labels[platform] || '🔗';
+  // For known platforms, use the predefined label
+  if (labels[platform]) return labels[platform];
+  // For company websites (detected as domain name), show first 2 chars uppercased
+  return platform.substring(0, 2).toUpperCase();
 }
 
 function formatDate(dateStr) {

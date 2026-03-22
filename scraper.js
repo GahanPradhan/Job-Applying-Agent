@@ -47,7 +47,8 @@ async function scrapeJobDetails(url) {
     else if (host.includes('glassdoor.com'))  details = extractGlassdoor($, html);
     else if (host.includes('lever.co'))       details = extractLever($);
     else if (host.includes('greenhouse.io'))  details = extractGreenhouse($);
-    else if (host.includes('workday.com'))    details = extractWorkday($, html);
+    else if (host.includes('workday.com') || host.includes('myworkdayjobs.com'))
+                                             details = extractWorkday($, html);
     else                                     details = extractGeneric($, html);
 
     // Clean up all fields
@@ -165,35 +166,187 @@ function extractWorkday($, html) {
   };
 }
 
-// ============== GENERIC EXTRACTOR ==============
-
 function extractGeneric($, html) {
-  // Try JSON-LD JobPosting first (many modern career pages use this)
+  // 1. Try JSON-LD JobPosting first (many modern career pages use this)
   const jsonLd = extractJsonLd(html, 'JobPosting');
 
   if (jsonLd) {
     return {
       title:       jsonLd.title || '',
       company:     jsonLd.hiringOrganization?.name || '',
-      location:    jsonLd.jobLocation?.address?.addressLocality ||
-                   jsonLd.jobLocation?.address?.name || '',
+      location:    extractJsonLdLocation(jsonLd) || '',
       salary:      formatSalary(jsonLd.baseSalary) || '',
       description: jsonLd.description || '',
     };
   }
 
-  // Fallback: OpenGraph + DOM
+  // 2. Try common DOM patterns used by career pages and ATS platforms
+  const title = extractTitleFromDom($);
+  const company = extractCompanyFromDom($);
+  const location = extractLocationFromDom($);
+  const salary = extractSalaryFromDom($);
+  const desc = extractDescFromDom($);
+
+  // 3. OpenGraph + meta tag fallback
   const ogTitle = $('meta[property="og:title"]').attr('content') || '';
   const ogDesc  = $('meta[property="og:description"]').attr('content') || '';
-  const h1      = $('h1').first().text();
+  const metaDesc = $('meta[name="description"]').attr('content') || '';
+  const ogSiteName = $('meta[property="og:site_name"]').attr('content') || '';
+
+  // Parse "title at company" patterns from og:title
+  let titleFromOg = '', companyFromOg = '';
+  if (ogTitle) {
+    // Common patterns: "Title at Company", "Title - Company", "Title | Company"
+    const separators = [' at ', ' - ', ' | ', ' — ', ' – '];
+    for (const sep of separators) {
+      if (ogTitle.includes(sep)) {
+        const parts = ogTitle.split(sep);
+        titleFromOg = parts[0].trim();
+        companyFromOg = parts.slice(1).join(sep).trim();
+        break;
+      }
+    }
+  }
 
   return {
-    title:       ogTitle || h1,
-    company:     $('meta[property="og:site_name"]').attr('content') || '',
-    location:    '',
-    salary:      '',
-    description: ogDesc,
+    title:       title || titleFromOg || ogTitle || $('h1').first().text() || $('title').text(),
+    company:     company || companyFromOg || ogSiteName,
+    location:    location,
+    salary:      salary,
+    description: desc || ogDesc || metaDesc,
   };
+}
+
+/**
+ * Extract job title from common DOM patterns
+ */
+function extractTitleFromDom($) {
+  const selectors = [
+    // Common class/ID patterns for job titles on career pages
+    'h1.job-title', 'h1.jobtitle', 'h1.position-title',
+    'h1[class*="job-title"]', 'h1[class*="jobtitle"]', 'h1[class*="position"]',
+    '[data-testid="job-title"]', '[data-qa="job-title"]',
+    '.job-title h1', '.jobtitle h1',
+    '.posting-headline h2', // Lever
+    'h1.app-title', // Greenhouse
+    'h1[itemprop="title"]', '[itemprop="title"]',
+    '.job-header h1', '.job-detail h1', '.career-detail h1',
+    'h1', // Last resort
+  ];
+
+  for (const sel of selectors) {
+    const text = $(sel).first().text().trim();
+    if (text && text.length > 3 && text.length < 200) return text;
+  }
+  return '';
+}
+
+/**
+ * Extract company name from common DOM patterns
+ */
+function extractCompanyFromDom($) {
+  const selectors = [
+    '[itemprop="hiringOrganization"] [itemprop="name"]',
+    '[itemprop="hiringOrganization"]',
+    '[data-testid="company-name"]', '[data-qa="company-name"]',
+    '.company-name', '.employer-name',
+    'h2[class*="company"]', 'span[class*="company"]',
+    '.job-company', '.posting-company',
+  ];
+
+  for (const sel of selectors) {
+    const text = $(sel).first().text().trim();
+    if (text && text.length > 1 && text.length < 100) return text;
+  }
+
+  // Try meta tag 
+  return $('meta[property="og:site_name"]').attr('content') || '';
+}
+
+/**
+ * Extract location from common DOM patterns
+ */
+function extractLocationFromDom($) {
+  const selectors = [
+    '[itemprop="jobLocation"] [itemprop="address"]',
+    '[itemprop="jobLocation"]',
+    '[data-testid="location"]', '[data-qa="location"]',
+    '.job-location', '.location', '.job-loc',
+    'span[class*="location"]', 'div[class*="location"]',
+    '.posting-categories .location',
+    '[class*="job-location"]',
+  ];
+
+  for (const sel of selectors) {
+    const text = $(sel).first().text().trim();
+    if (text && text.length > 2 && text.length < 100) return text;
+  }
+  return '';
+}
+
+/**
+ * Extract salary from common DOM patterns
+ */
+function extractSalaryFromDom($) {
+  const selectors = [
+    '[itemprop="baseSalary"]',
+    '[data-testid="salary"]', '[data-qa="salary"]',
+    '.salary', '.compensation', '.salary-range',
+    'span[class*="salary"]', 'div[class*="salary"]',
+    '[class*="compensation"]',
+  ];
+
+  for (const sel of selectors) {
+    const text = $(sel).first().text().trim();
+    if (text && text.length > 2 && text.length < 100) return text;
+  }
+  return '';
+}
+
+/**
+ * Extract job description from common DOM patterns
+ */
+function extractDescFromDom($) {
+  const selectors = [
+    '[itemprop="description"]',
+    '.job-description', '.job-desc', '#job-description',
+    '[data-testid="job-description"]', '[data-qa="job-description"]',
+    '.description__text', '.show-more-less-html__markup',
+    '.posting-page .content', '#content .content-intro',
+    '.job-details', '.career-description',
+    '[class*="job-description"]', '[class*="jobDescription"]',
+    'article', // Many career pages use article tags
+  ];
+
+  for (const sel of selectors) {
+    const text = $(sel).first().text().trim();
+    if (text && text.length > 50) return text;
+  }
+  return '';
+}
+
+/**
+ * Extract location from JSON-LD (handles multiple formats)
+ */
+function extractJsonLdLocation(jsonLd) {
+  if (!jsonLd?.jobLocation) return '';
+  const loc = jsonLd.jobLocation;
+  
+  // Can be a single object or array
+  const locations = Array.isArray(loc) ? loc : [loc];
+  
+  return locations.map(l => {
+    if (typeof l === 'string') return l;
+    const addr = l.address;
+    if (!addr) return l.name || '';
+    if (typeof addr === 'string') return addr;
+    const parts = [
+      addr.addressLocality,
+      addr.addressRegion,
+      addr.addressCountry?.name || addr.addressCountry
+    ].filter(Boolean);
+    return parts.join(', ');
+  }).filter(Boolean).join(' | ');
 }
 
 // ============== HELPERS ==============

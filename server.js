@@ -363,7 +363,7 @@ function extractTitleFromUrl(url) {
 }
 
 function detectPlatform(url) {
-  if (!url) return 'other';
+  if (!url) return 'unknown';
   const u = url.toLowerCase();
   if (u.includes('linkedin.com')) return 'linkedin';
   if (u.includes('indeed.com')) return 'indeed';
@@ -373,9 +373,36 @@ function detectPlatform(url) {
   if (u.includes('angel.co') || u.includes('wellfound.com')) return 'angellist';
   if (u.includes('lever.co')) return 'lever';
   if (u.includes('greenhouse.io')) return 'greenhouse';
-  if (u.includes('workday.com')) return 'workday';
+  if (u.includes('workday.com') || u.includes('myworkdayjobs.com') || u.includes('myworkdaysite.com')) return 'workday';
   if (u.includes('ziprecruiter.com')) return 'ziprecruiter';
-  return 'other';
+  if (u.includes('instahyre.com')) return 'instahyre';
+  if (u.includes('hirect.in') || u.includes('hirect.com')) return 'hirect';
+  if (u.includes('cutshort.io')) return 'cutshort';
+  if (u.includes('freshersworld.com')) return 'freshersworld';
+  if (u.includes('shine.com')) return 'shine';
+  if (u.includes('foundit.in') || u.includes('iimjobs.com')) return 'foundit';
+  if (u.includes('internshala.com')) return 'internshala';
+  if (u.includes('apna.co')) return 'apna';
+  if (u.includes('smartrecruiters.com')) return 'smartrecruiters';
+  if (u.includes('icims.com')) return 'icims';
+  if (u.includes('jobvite.com')) return 'jobvite';
+  if (u.includes('ashbyhq.com')) return 'ashby';
+  if (u.includes('bamboohr.com')) return 'bamboohr';
+  if (u.includes('recruitee.com')) return 'recruitee';
+
+  // For unknown sites, extract the brand name from the domain
+  try {
+    const hostname = new URL(url).hostname.replace('www.', '');
+    // Get the main domain part (e.g., "careers.google.com" → "Google")
+    const parts = hostname.split('.');
+    // For subdomains like "careers.google.com", use the main domain part
+    // But avoid generic ATS subdomains like "wd3.myworkdayjobs.com" (already handled above)
+    const brandPart = parts.length >= 3 ? parts[parts.length - 2] : parts[0];
+    // Avoid returning generic/meaningless values like 'co', 'com', 'org'
+    if (brandPart.length <= 2) return 'unknown';
+    return brandPart.charAt(0).toUpperCase() + brandPart.slice(1);
+  } catch {}
+  return 'unknown';
 }
 
 // Start server

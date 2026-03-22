@@ -510,8 +510,93 @@ function initModals() {
 
 function openAddJobModal() {
   document.getElementById('addJobForm').reset();
+  document.getElementById('jobDescription').value = '';
+  const scrapeStatus = document.getElementById('scrapeStatus');
+  scrapeStatus.style.display = 'none';
+  scrapeStatus.className = 'scrape-status';
   document.getElementById('addJobModal').classList.add('active');
-  setTimeout(() => document.getElementById('jobUrl').focus(), 100);
+  const jobUrlInput = document.getElementById('jobUrl');
+  setTimeout(() => jobUrlInput.focus(), 100);
+
+  // Remove old listeners to avoid duplicates
+  const newInput = jobUrlInput.cloneNode(true);
+  jobUrlInput.parentNode.replaceChild(newInput, jobUrlInput);
+
+  // Scrape on blur (user clicks away after pasting)
+  newInput.addEventListener('blur', () => scrapeJobUrl(newInput.value));
+
+  // Scrape on paste (instant feedback)
+  newInput.addEventListener('paste', (e) => {
+    setTimeout(() => scrapeJobUrl(newInput.value), 100);
+  });
+}
+
+let currentScrapeController = null;
+
+async function scrapeJobUrl(url) {
+  if (!url || !url.startsWith('http')) return;
+
+  const scrapeStatus = document.getElementById('scrapeStatus');
+  const scrapeText = document.getElementById('scrapeText');
+
+  // Don't re-scrape the same URL
+  if (scrapeStatus.dataset.lastUrl === url) return;
+  scrapeStatus.dataset.lastUrl = url;
+
+  // Cancel any in-progress scrape
+  if (currentScrapeController) currentScrapeController.abort();
+  currentScrapeController = new AbortController();
+
+  // Show loading
+  scrapeStatus.style.display = 'flex';
+  scrapeStatus.className = 'scrape-status';
+  scrapeText.textContent = 'Fetching job details...';
+
+  try {
+    const res = await fetch(`${API}/api/jobs/scrape?url=${encodeURIComponent(url)}`, {
+      signal: currentScrapeController.signal
+    });
+    const data = await res.json();
+
+    if (data.success && data.details) {
+      const d = data.details;
+      let filled = 0;
+
+      if (d.title) { document.getElementById('jobTitle').value = d.title; filled++; }
+      if (d.company) { document.getElementById('jobCompany').value = d.company; filled++; }
+      if (d.location) { document.getElementById('jobLocation').value = d.location; filled++; }
+      if (d.salary) { document.getElementById('jobSalary').value = d.salary; filled++; }
+      if (d.description) {
+        document.getElementById('jobDescription').value = d.description.substring(0, 500);
+        filled++;
+      }
+
+      if (filled > 0) {
+        scrapeStatus.className = 'scrape-status scrape-success';
+        scrapeText.textContent = `✅ Auto-filled ${filled} field${filled > 1 ? 's' : ''} from the job page`;
+
+        // Briefly highlight filled fields
+        ['jobTitle', 'jobCompany', 'jobLocation', 'jobSalary', 'jobDescription'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el && el.value) {
+            el.classList.add('autofilled');
+            setTimeout(() => el.classList.remove('autofilled'), 2000);
+          }
+        });
+      } else {
+        scrapeStatus.className = 'scrape-status scrape-error';
+        scrapeText.textContent = '⚠️ Could not extract details — fill manually';
+      }
+    } else {
+      scrapeStatus.className = 'scrape-status scrape-error';
+      scrapeText.textContent = '⚠️ Could not extract details — fill manually';
+    }
+  } catch (err) {
+    if (err.name !== 'AbortError') {
+      scrapeStatus.className = 'scrape-status scrape-error';
+      scrapeText.textContent = '⚠️ Failed to fetch — fill manually';
+    }
+  }
 }
 
 function closeModal(modal) {
@@ -527,6 +612,7 @@ async function handleAddJob(e) {
     company: document.getElementById('jobCompany').value || 'Unknown Company',
     location: document.getElementById('jobLocation').value,
     salary: document.getElementById('jobSalary').value,
+    description: document.getElementById('jobDescription').value,
     notes: document.getElementById('jobNotes').value
   };
 

@@ -4,6 +4,7 @@ const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 const path = require('path');
+const { scrapeJobDetails } = require('./scraper');
 
 const app = express();
 const PORT = 3000;
@@ -137,6 +138,20 @@ app.delete('/api/resume', (req, res) => {
 
 // ============== JOBS ENDPOINTS ==============
 
+// Scrape job details from a URL (used by frontend auto-fill)
+app.get('/api/jobs/scrape', async (req, res) => {
+  const { url } = req.query;
+  if (!url) return res.status(400).json({ error: 'URL is required' });
+
+  try {
+    const details = await scrapeJobDetails(url);
+    res.json({ success: true, details });
+  } catch (err) {
+    console.error('[Scrape API] Error:', err.message);
+    res.json({ success: false, details: { title: '', company: '', location: '', salary: '', description: '' } });
+  }
+});
+
 // Get all jobs
 app.get('/api/jobs', (req, res) => {
   const db = readDB();
@@ -193,7 +208,7 @@ app.delete('/api/jobs/:id', (req, res) => {
 // Used by: Chrome Extension, PWA Share Target, direct URL sharing
 
 // GET /add?url=<job-link>&title=&company= — serves a confirmation page
-app.get('/add', (req, res) => {
+app.get('/add', async (req, res) => {
   const { url, title, text, saved } = req.query;
   // PWA share target may send URL in 'text' or 'url' param
   const jobUrl = url || text || '';
@@ -204,15 +219,18 @@ app.get('/add', (req, res) => {
 
   // Only save if not already saved by /share-target redirect
   if (saved !== 'true') {
+    // Scrape job details before saving
+    const scraped = await scrapeJobDetails(jobUrl);
+
     const db = readDB();
     const job = {
       id: uuidv4(),
       url: jobUrl,
-      title: title || extractTitleFromUrl(jobUrl),
-      company: 'Unknown Company',
-      location: '',
-      salary: '',
-      description: '',
+      title: scraped.title || title || extractTitleFromUrl(jobUrl),
+      company: scraped.company || 'Unknown Company',
+      location: scraped.location || '',
+      salary: scraped.salary || '',
+      description: scraped.description || '',
       platform: detectPlatform(jobUrl),
       status: 'saved',
       notes: 'Added via share/quick-add',
@@ -230,7 +248,7 @@ app.get('/add', (req, res) => {
 });
 
 // POST /share-target — PWA Web Share Target handler
-app.post('/share-target', express.urlencoded({ extended: true }), (req, res) => {
+app.post('/share-target', express.urlencoded({ extended: true }), async (req, res) => {
   const { url, text, title } = req.body;
   const jobUrl = url || text || '';
 
@@ -238,16 +256,19 @@ app.post('/share-target', express.urlencoded({ extended: true }), (req, res) => 
     return res.redirect('/');
   }
 
-  // Auto-save the job
+  // Scrape job details before saving
+  const scraped = await scrapeJobDetails(jobUrl);
+
+  // Auto-save the job with scraped details
   const db = readDB();
   const job = {
     id: uuidv4(),
     url: jobUrl,
-    title: title || extractTitleFromUrl(jobUrl),
-    company: 'Unknown Company',
-    location: '',
-    salary: '',
-    description: '',
+    title: scraped.title || title || extractTitleFromUrl(jobUrl),
+    company: scraped.company || 'Unknown Company',
+    location: scraped.location || '',
+    salary: scraped.salary || '',
+    description: scraped.description || '',
     platform: detectPlatform(jobUrl),
     status: 'saved',
     notes: 'Added via mobile share',
